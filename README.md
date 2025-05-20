@@ -1,68 +1,77 @@
 # ds200-lab4-22521207
+
 22521207
+
 # Laptop Price Streaming Prediction with Spark Structured Streaming
 
-## Mô tả dự án
+## Project Description
 
-Dự án sử dụng Apache Spark Structured Streaming để xây dựng mô hình dự đoán giá laptop dựa trên các đặc trưng như tốc độ CPU, RAM, dung lượng lưu trữ, kích thước màn hình và trọng lượng. 
+This project uses Apache Spark Structured Streaming to build a laptop price prediction model based on features such as CPU speed, RAM size, storage capacity, screen size, and weight.
 
-Quá trình gồm hai phần chính:
-- **Phần 1:** Đọc dữ liệu lịch sử từ file CSV để huấn luyện mô hình dự đoán ban đầu.
-- **Phần 2:** Thiết lập Spark Structured Streaming đọc dữ liệu đầu vào dạng stream từ một server socket, xử lý dữ liệu theo batch, và áp dụng mô hình đã huấn luyện để dự đoán giá trong thời gian thực.
+The process consists of two main parts:
 
----
-
-## Hướng dẫn sử dụng
-
-### 1. Huấn luyện mô hình ban đầu với dữ liệu lịch sử
-
-- Dữ liệu lịch sử về giá laptop nằm trong file `Laptop_price.csv`.
-- Mô hình Linear Regression được huấn luyện trên dữ liệu này với các bước tiền xử lý:
-  - Imputation các giá trị thiếu với giá trị trung bình
-  - Chuẩn hóa dữ liệu
-  - Tạo pipeline để huấn luyện mô hình.
-- Sau khi huấn luyện, mô hình được lưu giữ trong biến toàn cục `pipeline_model_global`.
-
-### 2. Thiết lập streaming nhận dữ liệu và dự đoán
-
-- Spark đọc dữ liệu streaming từ socket TCP (host: `localhost`, port: `9999`).
-- Dữ liệu stream gửi đến dạng chuỗi CSV gồm các đặc trưng laptop.
-- Mỗi batch dữ liệu được xử lý thông qua hàm `process_batch`:
-  - In thông tin schema, xem một vài dòng dữ liệu đầu vào.
-  - Áp dụng mô hình đã huấn luyện để dự đoán giá laptop.
-  - Hiển thị kết quả dự đoán.
-- Streaming thực hiện trigger mỗi 15 giây.
-
-### 3. Server Python gửi dữ liệu
-
-- Server Python đọc file `Laptop_price.csv` và gửi từng dòng dữ liệu qua socket TCP tới Spark Streaming.
-- Server lắng nghe kết nối từ Spark, sau khi kết nối được thiết lập sẽ gửi lần lượt từng dòng dữ liệu.
-- Có delay 0.2 giây giữa các lần gửi để mô phỏng stream dữ liệu.
+* **Part 1:** Read historical data from a CSV file to train the initial prediction model.
+* **Part 2:** Set up Spark Structured Streaming to read input data as a stream from a server socket, process data in batches, and apply the trained model to predict prices in real time.
 
 ---
 
-## Cấu trúc các file chính
+## How to Use
 
-- `streaming_laptop_price.py`: Script chính dùng Spark Structured Streaming để đọc stream và dự đoán giá.
-- `data_streamer.py`: Server Python dùng để gửi dữ liệu từ CSV qua socket cho Spark đọc.
+### 1. Initial Model Training with Historical Data
+
+* The historical laptop price data is in the file `Laptop_price.csv`.
+* A Linear Regression model is trained on this data with preprocessing steps including:
+
+  * Imputation of missing values with mean values
+  * Data standardization
+  * Pipeline creation for model training
+* After training, the model is stored globally in the variable `pipeline_model_global`.
+
+### 2. Setting up Streaming to Receive Data and Predict
+
+* Spark reads streaming data from a TCP socket (host: `localhost`, port: `9999`).
+* Incoming stream data is CSV strings containing laptop features.
+* Each batch is processed by the `process_batch` function to:
+
+  * Print schema info and preview some data rows
+  * Apply the trained model to predict laptop prices
+  * Display prediction results
+* Streaming triggers every 15 seconds.
+
+### 3. Python Server to Send Data
+
+* A Python server reads the `Laptop_price.csv` file and sends rows one by one through the TCP socket to Spark Streaming.
+* The server waits for Spark to connect, then sends the data sequentially.
+* There is a 0.2-second delay between sending each row to simulate streaming data.
 
 ---
 
-## Yêu cầu môi trường
+## File Structure
 
-- Apache Spark (phiên bản hỗ trợ Structured Streaming)
-- Python 3.x
-- PySpark
-- pandas (cho phần server gửi dữ liệu)
+* `streaming_laptop_price.py`: Main Spark Structured Streaming script for reading streaming data and predicting prices.
+* `data_streamer.py`: Python server script for sending CSV data via socket to Spark Streaming.
 
 ---
 
-## Cách chạy
+## Environment Requirements
 
-1. Chạy file stream:
+* Apache Spark (version supporting Structured Streaming)
+* Python 3.x
+* PySpark
+* pandas (for data sending server)
 
-python stream.py
+---
 
-2. Chạy file main:
-   
+## How to Run (terminal)
+
+1. Run the streaming script:
+
+```bash
+python streamer.py
+```
+
+2. Run the main Spark streaming application:
+
+```bash
 spark-submit main.py
+
